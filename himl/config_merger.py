@@ -121,6 +121,10 @@ def merge_logic(process_params):
     if not os.path.exists(publish_path):
         os.makedirs(publish_path)
 
+    for k in list(output.keys()):
+        if k.startswith("himl_"):
+            output.pop(k)
+
     # create the yaml file for output using the publish_path and last level_values element
     filename = "{0}/{1}.yaml".format(publish_path, level_values[-1])
     logger.info("Found input config directory: %s", path)

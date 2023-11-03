@@ -210,13 +210,18 @@ class ConfigGenerator(object):
 
     @staticmethod
     def merge_yamls(values, yaml_content, type_strategies, fallback_strategies, type_conflict_strategies):
+        og_type_strategies = type_strategies
         for key, value in iteritems(yaml_content):
             if key in values and type(values[key]) != type(value):
                 raise Exception("Failed to merge key '{}', because of mismatch in type: {} vs {}"
                                 .format(key, type(values[key]), type(value)))
             if key in values and not isinstance(value, primitive_types):
+                schema_strategy = values.get("himl_{}".format(key))
+                if schema_strategy != None:
+                    type_strategies = [(type(values[key]), schema_strategy)]
                 values[key] = ConfigGenerator.merge_value(values[key], value, type_strategies, fallback_strategies,
                                                           type_conflict_strategies)
+                type_strategies = og_type_strategies
             else:
                 values[key] = value
 
